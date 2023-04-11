@@ -3,6 +3,7 @@
 namespace Mnabialek\LaravelSqlLogger;
 
 use Mnabialek\LaravelSqlLogger\Objects\SqlQuery;
+use Illuminate\Support\Facades\Log;
 
 class Writer
 {
@@ -47,11 +48,11 @@ class Writer
         $line = $this->formatter->getLine($query);
 
         if ($this->shouldLogQuery($query)) {
-            $this->saveLine($line, $this->fileName->getForAllQueries(), $this->shouldOverrideFile($query));
+            $this->saveLogLine($line, 'sql');
         }
 
         if ($this->shouldLogSlowQuery($query)) {
-            $this->saveLine($line, $this->fileName->getForSlowQueries());
+            $this->saveLogLine($line, 'slow-sql');
         }
     }
 
@@ -117,6 +118,17 @@ class Writer
             $line,
             $override ? 0 : FILE_APPEND
         );
+    }
+
+    /**
+     * Save data to log file using Log Facade.
+     *
+     * @param string $line
+     * @param string $channel
+     */
+    protected function saveLogLine($line, $channel)
+    {
+        Log::channel($channel)->info($line);
     }
 
     /**
