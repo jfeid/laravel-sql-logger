@@ -3,7 +3,6 @@
 namespace Mnabialek\LaravelSqlLogger;
 
 use Mnabialek\LaravelSqlLogger\Objects\SqlQuery;
-use Illuminate\Support\Facades\Log;
 
 class Writer
 {
@@ -113,11 +112,11 @@ class Writer
      */
     protected function saveLine($line, $fileName, $override = false)
     {
-        if (preg_match('/slow/', $fileName)) {
-            Log::channel('slow-sql')->info($line);    
-        } else {
-            Log::channel('sql')->info($line);
-        }
+        file_put_contents(
+            $this->directory() . DIRECTORY_SEPARATOR . $fileName,
+            $line,
+            $override ? 0 : FILE_APPEND
+        );
     }
 
     /**
